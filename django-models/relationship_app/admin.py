@@ -1,10 +1,23 @@
-
 from django.contrib import admin
-from .models import Book
+from .models import Author, Book, Library, Librarian
 
+@admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'publication_year')
-    list_filter = ('publication_year',)
-    search_fields = ('title', 'author')
+    list_display = ('title', 'author')  # remove 'publication_year'
+    list_filter = ('author',)           # remove 'publication_year'
+    search_fields = ('title', 'author__name')
 
-admin.site.register(Book, BookAdmin)
+@admin.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+@admin.register(Library)
+class LibraryAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    filter_horizontal = ('books',)
+
+@admin.register(Librarian)
+class LibrarianAdmin(admin.ModelAdmin):
+    list_display = ('name', 'library')
+
