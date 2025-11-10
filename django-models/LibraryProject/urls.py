@@ -22,21 +22,7 @@ from django.shortcuts import redirect
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('relationship_app/', include('LibraryProject.relationship_app.urls')),
-    path('', lambda request: redirect('relationship_app/books/')),  # redirect home
-path('relationship_app/', include('relationship_app.urls')),
-]
-
-
-
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path('', views.home, name='home'),  # home page
-    path('books/', views.list_books, name='list_books'),
-    path('library/<int:pk>/', views.LibraryDetailView.as_view(), name='library_detail'),
-    path('relationship_app/', include('relationship_app.urls')),
-
+    path('', lambda request: redirect('list_books')),  # redirect home to books list
 ]
 
 

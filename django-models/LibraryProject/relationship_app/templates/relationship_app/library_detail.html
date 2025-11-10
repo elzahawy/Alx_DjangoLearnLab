@@ -1,17 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ library.name }} Details</title>
-</head>
-<body>
-    <h1>{{ library.name }}</h1>
-    <h2>Books in this library:</h2>
-    <ul>
-        {% for book in library.book_set.all %}
-            <li>{{ book.title }} by {{ book.author }}</li>
-        {% empty %}
-            <li>No books in this library.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'relationship_app/base.html' %}
+
+{% block title %}{{ library.name }} - Library Management System{% endblock %}
+
+{% block content %}
+<div class="library-header">
+    <h1>🏛️ {{ library.name }}</h1>
+    {% if library.librarian %}
+        <p>Librarian: {{ library.librarian.name }}</p>
+    {% endif %}
+</div>
+
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ library.books.count }}</div>
+        <div class="stat-label">Total Books</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">1</div>
+        <div class="stat-label">Librarian</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2 style="margin-bottom: 20px; color: #333;">📚 Books in This Library:</h2>
+    {% if library.books.all %}
+        <ul class="book-list">
+            {% for book in library.books.all %}
+            <li class="book-item">
+                <div class="book-title">{{ book.title }}</div>
+                <div class="book-author">👤 Author: {{ book.author.name }}</div>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📖</div>
+            <h2>No books in this library yet</h2>
+            <p>Books will appear here once they are added to the collection.</p>
+        </div>
+    {% endif %}
+</div>
+
+<div style="margin-top: 20px; display: flex; gap: 10px;">
+    <a href="{% url 'list_libraries' %}" class="btn btn-secondary">← Back to Libraries</a>
+    <a href="{% url 'list_books' %}" class="btn btn-secondary">View All Books</a>
+</div>
+{% endblock %}

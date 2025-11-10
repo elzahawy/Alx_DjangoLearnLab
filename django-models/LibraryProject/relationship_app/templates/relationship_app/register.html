@@ -1,0 +1,87 @@
+{% extends 'relationship_app/base.html' %}
+
+{% block title %}Register - Library Management System{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto;">
+    <h1 class="page-title">✨ Create Account</h1>
+    
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                <input type="text" name="username" id="id_username" required autofocus>
+                {% if form.username.errors %}
+                    <ul>{{ form.username.errors }}</ul>
+                {% endif %}
+                {% if form.username.help_text %}
+                    <small style="color: #666; font-size: 12px;">{{ form.username.help_text }}</small>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password1">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" name="password1" id="id_password1" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('id_password1', this)" aria-label="Toggle password visibility">
+                        <span id="id_password1_toggle_icon">👁️</span>
+                    </button>
+                </div>
+                {% if form.password1.errors %}
+                    <ul>{{ form.password1.errors }}</ul>
+                {% endif %}
+                {% if form.password1.help_text %}
+                    <small style="color: #666; font-size: 12px;">{{ form.password1.help_text }}</small>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password2">Confirm Password</label>
+                <div class="password-wrapper">
+                    <input type="password" name="password2" id="id_password2" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('id_password2', this)" aria-label="Toggle password visibility">
+                        <span id="id_password2_toggle_icon">👁️</span>
+                    </button>
+                </div>
+                {% if form.password2.errors %}
+                    <ul>{{ form.password2.errors }}</ul>
+                {% endif %}
+                {% if form.password2.help_text %}
+                    <small style="color: #666; font-size: 12px;">{{ form.password2.help_text }}</small>
+                {% endif %}
+            </div>
+            
+            {% if form.non_field_errors %}
+                <div class="message error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Register</button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+            <p style="color: #666; margin-bottom: 10px;">Already have an account?</p>
+            <a href="{% url 'login' %}" class="btn btn-secondary" style="text-decoration: none; display: inline-block;">Login</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+    const icon = button.querySelector('span');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        icon.textContent = '👁️';
+    }
+}
+</script>
+{% endblock %}
+

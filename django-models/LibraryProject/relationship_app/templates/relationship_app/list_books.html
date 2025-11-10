@@ -1,16 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Books List</title>
-</head>
-<body>
-    <h1>Books</h1>
-    <ul>
-        {% for book in books %}
-            <li>{{ book.title }} by {{ book.author }}</li>
-        {% empty %}
-            <li>No books available.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'relationship_app/base.html' %}
+
+{% block title %}Books - Library Management System{% endblock %}
+
+{% block content %}
+<h1 class="page-title">📖 All Available Books</h1>
+
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ books|length }}</div>
+        <div class="stat-label">Total Books</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ books|length|add:"0" }}</div>
+        <div class="stat-label">Available Now</div>
+    </div>
+</div>
+
+<div class="card">
+    {% if books %}
+        <ul class="book-list">
+            {% for book in books %}
+            <li class="book-item">
+                <div class="book-title">{{ book.title }}</div>
+                <div class="book-author">👤 Author: {{ book.author.name }}</div>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <h2>No books available</h2>
+            <p>Check back later for new additions to our collection.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
