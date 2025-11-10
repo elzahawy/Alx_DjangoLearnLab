@@ -45,18 +45,31 @@ user = CustomUser.objects.create_user(
 
 ## Task 1: Managing Permissions and Groups
 
-### Custom Permissions in Book Model
-The Book model includes the following custom permissions:
+### Step 1: Define Custom Permissions in Models
+The Book model in `bookshelf/models.py` includes the following custom permissions:
 - `can_view` - Permission to view books
 - `can_create` - Permission to create books
 - `can_edit` - Permission to edit books
 - `can_delete` - Permission to delete books
 
-### Groups Setup
+These permissions are defined in the Book model's Meta class:
+```python
+class Meta:
+    permissions = [
+        ('can_view', 'Can view book'),
+        ('can_create', 'Can create book'),
+        ('can_edit', 'Can edit book'),
+        ('can_delete', 'Can delete book'),
+    ]
+```
+
+### Step 2: Create and Configure Groups with Assigned Permissions
 Three groups are configured:
 1. **Editors**: Have `can_create` and `can_edit` permissions
 2. **Viewers**: Have `can_view` permission only
 3. **Admins**: Have all permissions (`can_view`, `can_create`, `can_edit`, `can_delete`)
+
+Groups can be created via Django Admin or using the `setup_groups.py` script.
 
 ### Setting Up Groups (via Django Admin or Shell)
 
@@ -68,13 +81,17 @@ Three groups are configured:
 #### Via Django Shell:
 ```python
 from django.contrib.auth.models import Group, Permission
-from relationship_app.models import Book
+from django.contrib.contenttypes.models import ContentType
+from LibraryProject.bookshelf.models import Book
+
+# Get content type for Book model
+content_type = ContentType.objects.get_for_model(Book)
 
 # Get permissions
-can_view = Permission.objects.get(codename='can_view', content_type__model='book')
-can_create = Permission.objects.get(codename='can_create', content_type__model='book')
-can_edit = Permission.objects.get(codename='can_edit', content_type__model='book')
-can_delete = Permission.objects.get(codename='can_delete', content_type__model='book')
+can_view = Permission.objects.get(codename='can_view', content_type=content_type)
+can_create = Permission.objects.get(codename='can_create', content_type=content_type)
+can_edit = Permission.objects.get(codename='can_edit', content_type=content_type)
+can_delete = Permission.objects.get(codename='can_delete', content_type=content_type)
 
 # Create Editors group
 editors_group = Group.objects.create(name='Editors')
@@ -99,14 +116,24 @@ editors_group = Group.objects.get(name='Editors')
 user.groups.add(editors_group)
 ```
 
-### Views with Permission Checks
-- `list_books()` - Requires `can_view` permission
-- `view_book()` - Requires `can_view` permission
-- `add_book()` - Requires `can_create` permission
-- `edit_book()` - Requires `can_edit` permission
-- `delete_book()` - Requires `can_delete` permission
+### Step 3: Enforce Permissions in Views
+Views are modified to check for permissions before allowing users to perform certain actions. The `@permission_required` decorator is used to enforce these permissions.
+
+Views with Permission Checks:
+- `list_books()` - Requires `bookshelf.can_view` permission
+- `view_book()` - Requires `bookshelf.can_view` permission
+- `add_book()` - Requires `bookshelf.can_create` permission
+- `edit_book()` - Requires `bookshelf.can_edit` permission
+- `delete_book()` - Requires `bookshelf.can_delete` permission
 
 All views use `@permission_required` decorator with `raise_exception=True`.
+
+Example:
+```python
+@permission_required('bookshelf.can_create', raise_exception=True)
+def add_book(request):
+    # View implementation
+```
 
 ## Task 2: Security Best Practices
 

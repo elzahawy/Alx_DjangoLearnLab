@@ -45,3 +45,29 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.email
 
+
+# Task 1 Step 1: Define Custom Permissions in Models
+# Add custom permissions to control actions such as viewing, creating, editing, or deleting
+class Author(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class Book(models.Model):
+    title = models.CharField(max_length=255)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
+
+    class Meta:
+        # Task 1 Step 1: Create permissions such as can_view, can_create, can_edit, and can_delete
+        permissions = [
+            ('can_view', 'Can view book'),
+            ('can_create', 'Can create book'),
+            ('can_edit', 'Can edit book'),
+            ('can_delete', 'Can delete book'),
+        ]
+
+    def __str__(self):
+        return self.title
+

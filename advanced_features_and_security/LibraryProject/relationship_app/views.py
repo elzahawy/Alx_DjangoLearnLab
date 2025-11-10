@@ -6,10 +6,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.decorators import permission_required
 from django.contrib import messages
 from django.db.models import Q
-from .models import Book
+from LibraryProject.bookshelf.models import Book, Author, CustomUser
 from .models import Library
-from .models import Author
-from LibraryProject.bookshelf.models import CustomUser
 
 
 def list_books(request):
@@ -19,7 +17,7 @@ def list_books(request):
     Task 1: Protected with can_view permission
     """
     # Task 1: Check for can_view permission
-    if not request.user.has_perm('relationship_app.can_view'):
+    if not request.user.has_perm('bookshelf.can_view'):
         messages.error(request, 'You do not have permission to view books.')
         return redirect('login')
     
@@ -94,7 +92,7 @@ def member_view(request):
 # Task 1: Permission-Based Views for Books
 # Using the custom permissions: can_view, can_create, can_edit, can_delete
 
-@permission_required('relationship_app.can_view', raise_exception=True)
+@permission_required('bookshelf.can_view', raise_exception=True)
 def view_book(request, book_id):
     """View to display a single book - Task 1: Protected with can_view permission"""
     book = get_object_or_404(Book, id=book_id)
@@ -103,7 +101,7 @@ def view_book(request, book_id):
 # Task 1 Step 3: Enforce Permissions in Views
 # This view is protected with the can_create permission
 # Using @permission_required decorator to check permissions before allowing access
-@permission_required('relationship_app.can_create', raise_exception=True)
+@permission_required('bookshelf.can_create', raise_exception=True)
 def add_book(request):
     """
     View to add a new book
@@ -157,7 +155,7 @@ def add_book(request):
     authors = Author.objects.all()
     return render(request, 'relationship_app/add_book.html', {'authors': authors})
 
-@permission_required('relationship_app.can_edit', raise_exception=True)
+@permission_required('bookshelf.can_edit', raise_exception=True)
 def edit_book(request, book_id):
     """
     View to edit an existing book
@@ -198,7 +196,7 @@ def edit_book(request, book_id):
     authors = Author.objects.all()
     return render(request, 'relationship_app/edit_book.html', {'book': book, 'authors': authors})
 
-@permission_required('relationship_app.can_delete', raise_exception=True)
+@permission_required('bookshelf.can_delete', raise_exception=True)
 def delete_book(request, book_id):
     """
     View to delete a book
