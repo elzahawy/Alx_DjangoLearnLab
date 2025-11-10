@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Book</title>
+</head>
+<body>
+    <h1>{{ book.title }}</h1>
+    <p><strong>Author:</strong> {{ book.author.name }}</p>
+    <a href="{% url 'list_books' %}">Back to Books</a>
+    {% if user.has_perm('relationship_app.can_edit') %}
+        <a href="{% url 'edit_book' book.id %}">Edit</a>
+    {% endif %}
+    {% if user.has_perm('relationship_app.can_delete') %}
+        <a href="{% url 'delete_book' book.id %}">Delete</a>
+    {% endif %}
+</body>
+</html>
+

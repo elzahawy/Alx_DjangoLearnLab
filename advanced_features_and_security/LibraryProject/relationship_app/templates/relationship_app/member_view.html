@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Member View</title>
+</head>
+<body>
+    <h1>Member Dashboard</h1>
+    <p>Welcome, {{ user.username }}! You have Member access.</p>
+    <p>This view is only accessible to users with the Member role.</p>
+    <a href="{% url 'list_books' %}">Back to Books</a>
+</body>
+</html>
+
