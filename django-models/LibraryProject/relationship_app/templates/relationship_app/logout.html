@@ -1,19 +1,13 @@
-{% extends 'relationship_app/base.html' %}
-
-{% block title %}Logout - Library Management System{% endblock %}
-
-{% block content %}
-<div style="max-width: 600px; margin: 0 auto; text-align: center;">
-    <div class="card">
-        <div class="empty-state">
-            <div class="empty-state-icon">👋</div>
-            <h1 style="color: #333; margin-bottom: 15px;">You have been logged out</h1>
-            <p style="color: #666; margin-bottom: 30px; font-size: 16px;">
-                Thank you for using the Library Management System. We hope to see you again soon!
-            </p>
-            <a href="{% url 'login' %}" class="btn">Login Again</a>
-        </div>
-    </div>
-</div>
-{% endblock %}
+<!-- logout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Logout</title>
+</head>
+<body>
+    <h1>You have been logged out</h1>
+    <a href="{% url 'login' %}">Login again</a>
+</body>
+</html>
 
