@@ -9,7 +9,7 @@ from django.db.models import Q
 from .models import Book
 from .models import Library
 from .models import Author
-from .models import CustomUser
+from LibraryProject.bookshelf.models import CustomUser
 
 
 def list_books(request):

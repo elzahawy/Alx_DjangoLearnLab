@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'LibraryProject.bookshelf',
     'LibraryProject.relationship_app',
 ]
 
@@ -87,9 +88,10 @@ DATABASES = {
 }
 
 
-# Task 0: Custom User Model Configuration
-# Set AUTH_USER_MODEL to use our custom user model
-AUTH_USER_MODEL = 'relationship_app.CustomUser'
+# Task 0 Step 2: Update Settings to Use the Custom User Model
+# Configure Django to use this custom user model for all user-related functionalities
+# Set the AUTH_USER_MODEL to point to your new custom user model
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
 
 # Password validation
