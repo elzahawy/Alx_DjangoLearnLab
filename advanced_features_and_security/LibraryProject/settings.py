@@ -55,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Task 2 Step 4: Content Security Policy (CSP) - Custom middleware for CSP headers
+    'LibraryProject.bookshelf.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -175,15 +177,17 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 # This allows HSTS preloading for better security
 SECURE_HSTS_PRELOAD = True
 
-# Task 3 Step 2: Enforce Secure Cookies
+# Task 2 Step 1 & Task 3 Step 2: Enforce Secure Cookies
 # SESSION_COOKIE_SECURE: Set to True to ensure session cookies are only transmitted over HTTPS
 # This prevents session cookies from being sent over insecure HTTP connections
-SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+# Task 2 Step 1: Ensure CSRF_COOKIE_SECURE and SESSION_COOKIE_SECURE are set to True
+SESSION_COOKIE_SECURE = True  # Set to False for development without HTTPS
 
-# Task 3 Step 2: CSRF_COOKIE_SECURE: Set to True
+# Task 2 Step 1 & Task 3 Step 2: CSRF_COOKIE_SECURE: Set to True
 # This ensures CSRF cookies are only transmitted over HTTPS
 # Prevents CSRF tokens from being intercepted over insecure connections
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+# Task 2 Step 1: Ensure CSRF_COOKIE_SECURE and SESSION_COOKIE_SECURE are set to True
+CSRF_COOKIE_SECURE = True  # Set to False for development without HTTPS
 
 # ============================================================================
 # Task 2 & 3 Step 3: Implement Secure Headers
