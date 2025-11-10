@@ -25,9 +25,13 @@ SECRET_KEY = 'django-insecure-d#2@1%novv!u!j8r-dfq2nh-q#yikc05$17e4%1h$fbepxwd&t
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Task 2: Security Best Practices - Set DEBUG to False in production
-DEBUG = False  # Set to True for development, False for production
+# IMPORTANT: Set DEBUG = True for development, DEBUG = False for production
+DEBUG = True  # Change to False in production
 
-ALLOWED_HOSTS = ['*']  # Configure appropriately for production
+# Task 2: Configure ALLOWED_HOSTS appropriately for production
+# For development: ALLOWED_HOSTS = []
+# For production: ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']
+ALLOWED_HOSTS = []  # Configure appropriately for production
 
 
 # Application definition
@@ -145,36 +149,56 @@ LOGOUT_REDIRECT_URL = 'login'
 # Task 2 & 3: Security Best Practices and HTTPS Configuration
 # ============================================================================
 
-# Task 3: HTTPS and Secure Redirects
-# SECURE_SSL_REDIRECT: Redirect all non-HTTPS requests to HTTPS
-# Set to True in production when SSL/TLS is configured
-SECURE_SSL_REDIRECT = True  # Set to False for development without HTTPS
+# ============================================================================
+# Task 3: HTTPS and Secure Redirects Configuration
+# ============================================================================
+# IMPORTANT: These settings should be True in production with HTTPS,
+#            but False in development without HTTPS
 
-# HSTS (HTTP Strict Transport Security) Settings
-# SECURE_HSTS_SECONDS: Instruct browsers to only access the site via HTTPS
-SECURE_HSTS_SECONDS = 31536000  # 1 year in seconds
+# Task 3 Step 1: Configure Django for HTTPS Support
+# SECURE_SSL_REDIRECT: Set to True to redirect all non-HTTPS requests to HTTPS
+# This ensures all HTTP traffic is automatically redirected to HTTPS
+SECURE_SSL_REDIRECT = False  # Set to True in production with HTTPS
 
-# SECURE_HSTS_INCLUDE_SUBDOMAINS: Include all subdomains in HSTS policy
+# Task 3 Step 1: HSTS (HTTP Strict Transport Security) Settings
+# SECURE_HSTS_SECONDS: Set an appropriate value (e.g., 31536000 for one year)
+# This instructs browsers to only access the site via HTTPS for the specified time
+SECURE_HSTS_SECONDS = 31536000  # 1 year in seconds (31536000)
+
+# Task 3 Step 1: SECURE_HSTS_INCLUDE_SUBDOMAINS: Set to True
+# This includes all subdomains in the HSTS policy
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
-# SECURE_HSTS_PRELOAD: Allow HSTS preloading
+# Task 3 Step 1: SECURE_HSTS_PRELOAD: Set to True
+# This allows HSTS preloading for better security
 SECURE_HSTS_PRELOAD = True
 
-# Task 3: Enforce Secure Cookies
-# SESSION_COOKIE_SECURE: Ensure session cookies are only transmitted over HTTPS
-SESSION_COOKIE_SECURE = True  # Set to False for development without HTTPS
+# Task 3 Step 2: Enforce Secure Cookies
+# SESSION_COOKIE_SECURE: Set to True to ensure session cookies are only transmitted over HTTPS
+# This prevents session cookies from being sent over insecure HTTP connections
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
 
-# CSRF_COOKIE_SECURE: Ensure CSRF cookies are only transmitted over HTTPS
-CSRF_COOKIE_SECURE = True  # Set to False for development without HTTPS
+# Task 3 Step 2: CSRF_COOKIE_SECURE: Set to True
+# This ensures CSRF cookies are only transmitted over HTTPS
+# Prevents CSRF tokens from being intercepted over insecure connections
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
 
-# Task 2 & 3: Secure Headers
-# X_FRAME_OPTIONS: Prevent site from being framed (clickjacking protection)
+# ============================================================================
+# Task 2 & 3 Step 3: Implement Secure Headers
+# ============================================================================
+
+# Task 3 Step 3: X_FRAME_OPTIONS: Set to "DENY"
+# This prevents your site from being framed and protects against clickjacking attacks
+# Options: 'DENY' (no framing), 'SAMEORIGIN' (same origin only), 'ALLOWALL' (not recommended)
 X_FRAME_OPTIONS = 'DENY'
 
-# SECURE_CONTENT_TYPE_NOSNIFF: Prevent browsers from MIME-sniffing
+# Task 2 Step 1 & Task 3 Step 3: SECURE_CONTENT_TYPE_NOSNIFF: Set to True
+# This prevents browsers from MIME-sniffing a response away from the declared content-type
+# Protects against MIME type confusion attacks
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
-# SECURE_BROWSER_XSS_FILTER: Enable browser's XSS filtering
+# Task 2 Step 1 & Task 3 Step 3: SECURE_BROWSER_XSS_FILTER: Set to True
+# This enables the browser's XSS filtering and helps prevent cross-site scripting attacks
 SECURE_BROWSER_XSS_FILTER = True
 
 # Task 2: Additional Security Settings

@@ -100,19 +100,32 @@ def view_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     return render(request, 'relationship_app/view_book.html', {'book': book})
 
+# Task 1 Step 3: Enforce Permissions in Views
+# This view is protected with the can_create permission
+# Using @permission_required decorator to check permissions before allowing access
 @permission_required('relationship_app.can_create', raise_exception=True)
 def add_book(request):
     """
     View to add a new book
-    Task 1: Protected with can_create permission (using can_create instead of can_add_book)
-    Task 2: Secure data access - using Django ORM properly, validating input
+    
+    Task 1 Step 3: Protected with can_create permission using @permission_required decorator
+    Task 2 Step 3: Secure data access - using Django ORM properly, validating input to prevent SQL injection
+    
+    Security measures:
+    - Permission check: Only users with can_create permission can access
+    - Input validation: Validates title and author_id are provided
+    - Input sanitization: Strips whitespace from title
+    - ORM usage: Uses Django ORM (get_object_or_404, objects.create) instead of raw SQL
+    - Error handling: Try-except block for safe error handling
     """
     if request.method == 'POST':
-        # Task 2: Secure data access - validate and sanitize input
+        # Task 2 Step 3: Secure data access - validate and sanitize user input
+        # Strip whitespace to sanitize input and prevent issues
         title = request.POST.get('title', '').strip()
         author_id = request.POST.get('author_id')
         
-        # Validate input
+        # Task 2 Step 3: Validate input to ensure required fields are present
+        # This prevents invalid data from being processed
         if not title:
             messages.error(request, 'Title is required.')
             authors = Author.objects.all()
@@ -123,19 +136,24 @@ def add_book(request):
             authors = Author.objects.all()
             return render(request, 'relationship_app/add_book.html', {'authors': authors})
         
-        # Task 2: Use Django ORM properly - parameterized query (get_object_or_404)
+        # Task 2 Step 3: Use Django ORM properly - parameterized query (get_object_or_404)
+        # This prevents SQL injection by using Django's ORM instead of raw SQL
+        # get_object_or_404 safely retrieves objects and handles not found cases
         try:
             author = get_object_or_404(Author, id=author_id)
-            # Task 2: Use ORM create method instead of raw SQL
+            # Task 2 Step 3: Use ORM create method instead of raw SQL
+            # Book.objects.create() uses parameterized queries internally, preventing SQL injection
             book = Book.objects.create(title=title, author=author)
             messages.success(request, f'Book "{book.title}" added successfully!')
             return redirect('list_books')
         except Exception as e:
+            # Task 2 Step 3: Error handling - catch exceptions safely
             messages.error(request, f'Error creating book: {str(e)}')
             authors = Author.objects.all()
             return render(request, 'relationship_app/add_book.html', {'authors': authors})
     
-    # Task 2: Use ORM query properly
+    # Task 2 Step 3: Use ORM query properly - no raw SQL
+    # Author.objects.all() uses Django ORM, which is safe from SQL injection
     authors = Author.objects.all()
     return render(request, 'relationship_app/add_book.html', {'authors': authors})
 
@@ -199,17 +217,33 @@ def delete_book(request, book_id):
     return render(request, 'relationship_app/delete_book.html', {'book': book})
 
 
-# Task 2: Secure search functionality
+# Task 2 Step 3: Secure Data Access in Views
+# Secure search functionality - prevents SQL injection by using Django ORM
 @login_required
 def search_books(request):
     """
-    Secure search view - Task 2: Prevents SQL injection by using Django ORM
+    Secure search view
+    
+    Task 2 Step 3: Prevents SQL injection by using Django ORM instead of raw SQL
+    
+    Security measures:
+    - Input sanitization: Strips whitespace from query
+    - ORM usage: Uses Django ORM Q objects for filtering
+    - No raw SQL: Never uses string formatting or raw SQL queries
+    - Parameterized queries: Django ORM automatically parameterizes queries
+    
+    Example of what NOT to do (SQL injection vulnerable):
+    # NEVER: Book.objects.raw(f"SELECT * FROM books WHERE title = '{query}'")
+    # NEVER: Book.objects.extra(where=[f"title LIKE '%{query}%'"])
     """
+    # Task 2 Step 3: Sanitize user input - strip whitespace
     query = request.GET.get('q', '').strip()
     books = []
     
     if query:
-        # Task 2: Use Django ORM filter with Q objects - prevents SQL injection
+        # Task 2 Step 3: Use Django ORM filter with Q objects - prevents SQL injection
+        # Q objects allow complex queries while maintaining security
+        # Django ORM automatically parameterizes these queries, preventing SQL injection
         # Never use string formatting or raw SQL for user input
         books = Book.objects.filter(
             Q(title__icontains=query) | Q(author__name__icontains=query)
