@@ -23,8 +23,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('bookshelf/', include('LibraryProject.bookshelf.urls')),
     path('relationship_app/', include('LibraryProject.relationship_app.urls')),
-    path('', lambda request: redirect('list_books')),  # redirect home to books list
+    path('', lambda request: redirect('book_list')),  # redirect home to books list
 ]
 
 # Serve media files during development
