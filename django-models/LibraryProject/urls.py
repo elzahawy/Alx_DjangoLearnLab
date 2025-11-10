@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('relationship_app/', include('LibraryProject.relationship_app.urls')),
     path('', lambda request: redirect('relationship_app/books/')),  # redirect home
+path('relationship_app/', include('relationship_app.urls')),
 ]
 
 
