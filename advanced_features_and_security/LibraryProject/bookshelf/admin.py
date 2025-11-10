@@ -6,7 +6,6 @@ from .models import CustomUser
 
 # Task 0 Step 4: Integrate the Custom User Model into Admin
 # Custom ModelAdmin class that includes configurations for the additional fields
-@admin.register(CustomUser)
 class CustomUserAdmin(BaseUserAdmin):
     """Custom admin configuration for CustomUser model"""
     # Fields to display in the user list
@@ -35,4 +34,8 @@ class CustomUserAdmin(BaseUserAdmin):
     
     # Make email the username field
     filter_horizontal = ('groups', 'user_permissions')
+
+
+# Register CustomUser with admin
+admin.site.register(CustomUser, CustomUserAdmin)
 
