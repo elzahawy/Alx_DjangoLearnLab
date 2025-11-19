@@ -35,3 +35,24 @@ def edit_book(request):
 @permission_required('bookshelf.can_delete', raise_exception=True)
 def delete_book(request):
     return render(request, "bookshelf/delete_book.html")
+
+from django.shortcuts import render, redirect
+from .forms import ExampleForm
+from .models import Book
+
+# Example form view
+def example_form_view(request):
+    if request.method == "POST":
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            # Safe handling of form data
+            form.save()
+            return redirect('book_list')
+    else:
+        form = ExampleForm()
+    return render(request, 'bookshelf/form_example.html', {'form': form})
+
+# Book list view
+def book_list_view(request):
+    books = Book.objects.all()  # Safe ORM query
+    return render(request, 'bookshelf/book_list.html', {'books': books})
