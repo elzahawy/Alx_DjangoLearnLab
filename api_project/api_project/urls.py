@@ -20,11 +20,25 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]'''
-from django.contrib import admin
+'''from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),  # Connect the api app
-]
+]'''
 
+from django.contrib import admin
+from django.urls import path, include
+from rest_framework.authtoken.views import obtain_auth_token
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Welcome to the Book API!")
+
+urlpatterns = [
+    path('', home),
+    path('admin/', admin.site.urls),
+    path('api/', include('api.urls')),
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),  # token endpoint
+]
