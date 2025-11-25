@@ -23,7 +23,7 @@ urlpatterns = [
 ]'''
 
 
-from django.contrib import admin
+'''from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
@@ -31,4 +31,13 @@ urlpatterns = [
     
     # Required by checker
     path('api/', include('api.urls')),
+]'''
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include('api.urls')),  # MUST be here
 ]
+
