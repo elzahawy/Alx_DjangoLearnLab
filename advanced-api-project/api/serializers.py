@@ -27,3 +27,20 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ['id', 'name', 'books']
 
+
+# api/serializers.py
+from rest_framework import serializers
+from .models import Book, Author
+
+class AuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ['id', 'name']
+
+class BookSerializer(serializers.ModelSerializer):
+    author = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all())  # Accept ID
+
+    class Meta:
+        model = Book
+        fields = ['id', 'title', 'author', 'publication_year']  # include all required fields
+

@@ -1,84 +1,29 @@
-"""
-This module contains the Book CRUD API endpoints using Django REST Framework's
-generic views. Each view handles a specific CRUD action and applies appropriate
-permissions.
-
-Views included:
-- BookListView: List all books (public)
-- BookDetailView: Retrieve a specific book (public)
-- BookCreateView: Create a book (authenticated users only)
-- BookUpdateView: Update a book (authenticated users only)
-- BookDeleteView: Delete a book (authenticated users only)
-"""
-
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from rest_framework import generics
+from rest_framework import generics, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Book
 from .serializers import BookSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
-# -------------------------------
-# LIST VIEW — Anyone can view books
-# -------------------------------
-class BookListView(generics.ListAPIView):
-    """
-    Retrieves a list of all books.
-    Read-only — no authentication required.
-    """
+class BookListCreateView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAuthenticated]
 
+    # Add filtering, searching, ordering
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    ]
 
-# -------------------------------
-# DETAIL VIEW — Anyone can view a single book
-# -------------------------------
-class BookDetailView(generics.RetrieveAPIView):
-    """
-    Retrieves a single book by ID.
-    Read-only — no authentication required.
-    """
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]
+    # Filter by book fields
+    filterset_fields = ['title', 'author', 'publication_year']
 
+    # Search
+    search_fields = ['title', 'author']
 
-# -------------------------------
-# CREATE VIEW — Only authenticated users can add books
-# -------------------------------
-class BookCreateView(generics.CreateAPIView):
-    """
-    Creates a new book entry.
-    Requires authentication.
-    Includes built-in serializer validation.
-    """
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # Order results
+    ordering_fields = ['title', 'publication_year']
+    ordering = ['title']  # default ordering
 
-
-# -------------------------------
-# UPDATE VIEW — Only authenticated users can modify books
-# -------------------------------
-class BookUpdateView(generics.UpdateAPIView):
-    """
-    Updates an existing book.
-    Requires authentication.
-    """
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-# -------------------------------
-# DELETE VIEW — Only authenticated users can delete
-# -------------------------------
-class BookDeleteView(generics.DestroyAPIView):
-    """
-    Deletes a book entry.
-    Requires authentication.
-    """
-    queryset = Book.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-
-# Create your views here.
