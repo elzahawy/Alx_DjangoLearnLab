@@ -1,9 +1,10 @@
 from django.shortcuts import render
+from .models import Post
 
 def home(request):
-    return render(request, 'blog/base.html')
+    return render(request, 'blog/home.html')
 
 def posts(request):
-    # For now, just render a simple template or reuse base.html
-    return render(request, 'blog/base.html')  # you can change this later
-# Create your views here.
+    posts = Post.objects.all().order_by('-published_date')
+    return render(request, 'blog/posts.html', {'posts': posts})
+
