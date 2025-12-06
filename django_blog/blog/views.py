@@ -1,13 +1,3 @@
-
-
-
-
-
-
-
-
-
-
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -22,9 +12,7 @@ from django.shortcuts import render
 from .models import Post
 
 def home(request):
-    posts = Post.objects.all()
-    return render(request, 'blog/home.html', {'posts': posts})
-
+    return redirect('post-list')
 
 # --------------------
 # Authentication Views
