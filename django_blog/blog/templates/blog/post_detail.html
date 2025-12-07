@@ -29,3 +29,13 @@ post_detail.html{% extends "base.html" %}
 {% else %}
     <p><a href="{% url 'login' %}">Login</a> to comment.</p>
 {% endif %}
+
+<p>
+    <strong>Tags:</strong>
+    {% for tag in post.tags.all %}
+        <a href="{% url 'posts-by-tag' tag.name %}">{{ tag.name }}</a>
+        {% if not forloop.last %}, {% endif %}
+    {% empty %}
+        No tags.
+    {% endfor %}
+</p>

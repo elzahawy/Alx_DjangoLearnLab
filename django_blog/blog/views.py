@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout
+from django.db.models import Q
+from django.contrib.auth import authenticate,login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .forms import CustomUserCreationForm, CommentForm
-from .models import Post, Comment
+from .forms import PostForm, CommentForm, CustomUserCreationForm
+from .models import Post, Comment, Tag
 
 # Redirect home to posts list
 def home(request):
@@ -17,6 +18,27 @@ def home(request):
 # --------------------
 # Blog CRUD Views
 # --------------------
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            return redirect('post-list')
+    return render(request, 'blog/login.html')
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')  # redirect after logout
+
+# Profile view (user must be logged in)
+@login_required
+def profile_view(request):
+    return render(request, 'blog/profile.html', {'user': request.user})
+
+
 class PostListView(ListView):
     model = Post
     template_name = "blog/post_list.html"
@@ -31,24 +53,55 @@ class PostDetailView(DetailView):
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = "blog/post_form.html"
-    fields = ["title", "content"]
+    form_class = PostForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        self.save_tags(form.cleaned_data.get('tags_field', ''), self.object)
+        return response
 
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    def save_tags(self, tags_string, post):
+        names = [t.strip() for t in tags_string.split(',') if t.strip()]
+        tags = []
+        for name in names:
+            tag, created = Tag.objects.get_or_create(name=name)
+            tags.append(tag)
+        post.tags.set(tags)
+
+
+
+
+'''class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = "blog/post_form.html"
     fields = ["title", "content"]
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super().form_valid(form)
+        return super().form_valid(form)'''
+
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post
+    template_name = "blog/post_form.html"
+    form_class = PostForm
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.save_tags(form.cleaned_data.get('tags_field', ''), self.object)
+        return response
+
+    def save_tags(self, tags_string, post):
+        names = [t.strip() for t in tags_string.split(',') if t.strip()]
+        tags = []
+        for name in names:
+            tag, created = Tag.objects.get_or_create(name=name)
+            tags.append(tag)
+        post.tags.set(tags)
 
     def test_func(self):
-        post = self.get_object()
-        return self.request.user == post.author
+        return self.get_object().author == self.request.user
+
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
@@ -58,6 +111,32 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+
+
+def posts_by_tag(request, tag_name):
+    posts = Post.objects.filter(tags__name__iexact=tag_name)
+    return render(request, "blog/post_list.html", {"posts": posts, "tag_name": tag_name})
+
+def search(request):
+    q = request.GET.get("q", "")
+    posts = Post.objects.filter(
+        Q(title__icontains=q) |
+        Q(content__icontains=q) |
+        Q(tags__name__icontains=q)
+    ).distinct()
+    return render(request, "blog/search_results.html", {"posts": posts, "query": q})
+
+
+def register_view(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'blog/register.html', {'form': form})
+
 
 # --------------------
 # Comment Views
