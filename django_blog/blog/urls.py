@@ -17,14 +17,11 @@ urlpatterns = [
     path('post/<int:pk>/update/', views.PostUpdateView.as_view(), name='post-update'),
     path('post/<int:pk>/delete/', views.PostDeleteView.as_view(), name='post-delete'),
 
-     # Comment URLs
-     path('post/<int:post_id>/comments/new/', views.CommentCreateView.as_view(), name='comment-create'),
-     path('comments/<int:pk>/edit/', views.CommentUpdateView.as_view(), name='comment-update'),
-     path('comments/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='comment-delete'),
-
+    # COMMENT URLs (required by ALX)
+    path('post/<int:post_id>/comments/new/', views.CommentCreateView.as_view(), name='comment-create'),
+    path('comment/<int:pk>/update/', views.CommentUpdateView.as_view(), name='comment-update'),
+    path('comment/<int:pk>/delete/', views.CommentDeleteView.as_view(), name='comment-delete'),
 ]
-
-
 
 
 
