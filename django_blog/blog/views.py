@@ -38,6 +38,11 @@ def logout_view(request):
 def profile_view(request):
     return render(request, 'blog/profile.html', {'user': request.user})
 
+def posts_by_tag(request, tag_name):
+    posts = Post.objects.filter(tags__name__iexact=tag_name)
+    return render(request, "blog/posts_by_tag.html", {"posts": posts, "tag_name": tag_name})
+
+
 
 class PostListView(ListView):
     model = Post
