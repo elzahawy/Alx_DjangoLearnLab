@@ -1,9 +1,28 @@
 {% extends "blog/base.html" %}
+
 {% block content %}
-<h1>Posts tagged "{{ tag_name }}"</h1>
-{% for post in posts %}
-    <h2><a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a></h2>
-{% empty %}
-    <p>No posts found.</p>
-{% endfor %}
+<div class="container mt-4">
+    <h2 class="mb-4">Posts tagged: <span class="text-primary">{{ tag_name }}</span></h2>
+
+    {% if posts %}
+        <ul class="list-group">
+            {% for post in posts %}
+                <li class="list-group-item">
+                    <a href="{% url 'post-detail' post.id %}">
+                        <h5>{{ post.title }}</h5>
+                    </a>
+                    <p>{{ post.content|truncatechars:120 }}</p>
+
+                    <small class="text-muted">
+                        Posted by {{ post.author }} |
+                        {{ post.created_at|date:"M d, Y" }}
+                    </small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No posts found with this tag.</p>
+    {% endif %}
+</div>
 {% endblock %}
+

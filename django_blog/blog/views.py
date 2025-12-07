@@ -64,6 +64,16 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
+
+
+def posts_by_tag(request, tag_slug):
+    posts = Post.objects.filter(tags__slug__iexact=tag_slug)
+    return render(request, "blog/posts_by_tag.html", {
+        "posts": posts,
+        "tag_name": tag_slug
+    })
+
+
 # Search view
 def search_view(request):
     query = request.GET.get('q', '')
