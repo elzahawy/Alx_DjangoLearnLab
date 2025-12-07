@@ -4,7 +4,8 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path("tags/<str:tag_name>/", views.posts_by_tag, name="posts-by-tag"),
-    path("search/", views.search, name="search"),
+
+path('search/', views.search_view, name='search'),
 
 
     # Authentication

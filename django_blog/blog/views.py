@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .forms import PostForm, CommentForm, CustomUserCreationForm
-from .models import Post, Comment, Tag
+from .models import Post, Comment
 
 # Redirect home to posts list
 def home(request):
@@ -55,21 +55,16 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     template_name = "blog/post_form.html"
     form_class = PostForm
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        response = super().form_valid(form)
-        self.save_tags(form.cleaned_data.get('tags_field', ''), self.object)
-        return response
+def form_valid(self, form):
+    form.instance.author = self.request.user
+    return super().form_valid(form)
 
-    def save_tags(self, tags_string, post):
-        names = [t.strip() for t in tags_string.split(',') if t.strip()]
-        tags = []
-        for name in names:
-            tag, created = Tag.objects.get_or_create(name=name)
-            tags.append(tag)
-        post.tags.set(tags)
-
-
+def search_view(request):
+    query = request.GET.get('q', '')
+    results = Post.objects.filter(
+        Q(title__icontains=query) | Q(content__icontains=query) | Q(tags__name__icontains=query)
+    ).distinct()
+    return render(request, 'blog/search_results.html', {'results': results, 'query': query})
 
 
 '''class PostCreateView(LoginRequiredMixin, CreateView):
