@@ -55,10 +55,11 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     template_name = "blog/post_form.html"
     form_class = PostForm
 
-def form_valid(self, form):
-    form.instance.author = self.request.user
-    return super().form_valid(form)
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
+# Search view
 def search_view(request):
     query = request.GET.get('q', '')
     results = Post.objects.filter(

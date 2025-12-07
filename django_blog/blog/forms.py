@@ -19,24 +19,6 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = ['content']
 
-'''class PostForm(forms.ModelForm):
-    tags_field = forms.CharField(
-        required=False,
-        label="Tags (comma-separated)",
-        widget=forms.TextInput(attrs={'placeholder': 'django, python, tech'})
-    )
-
-    class Meta:
-        model = Post
-        fields = ['title', 'content']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance.pk:
-            self.fields['tags_field'].initial = ", ".join(
-                t.name for t in self.instance.tags.all()
-            )'''
-
 
 class PostForm(forms.ModelForm):
     class Meta:
