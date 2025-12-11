@@ -4,7 +4,31 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
 from .serializers import RegisterSerializer, LoginSerializer
+from django.shortcuts import get_object_or_404
 from .models import CustomUser
+
+
+class FollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        target_user = get_object_or_404(CustomUser, id=user_id)
+        if target_user == request.user:
+            return Response({"detail": "You cannot follow yourself."}, status=400)
+        request.user.following.add(target_user)
+        return Response({"detail": f"You are now following {target_user.username}."})
+
+class UnfollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        target_user = get_object_or_404(CustomUser, id=user_id)
+        if target_user == request.user:
+            return Response({"detail": "You cannot unfollow yourself."}, status=400)
+        request.user.following.remove(target_user)
+        return Response({"detail": f"You have unfollowed {target_user.username}."})
+
+
 
 
 class RegisterView(APIView):
