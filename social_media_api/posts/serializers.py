@@ -1,19 +1,21 @@
 from rest_framework import serializers
 from .models import Post, Comment
-
-class PostSerializer(serializers.ModelSerializer):
-    author = serializers.ReadOnlyField(source='author.username')
-    comments_count = serializers.IntegerField(source='comments.count', read_only=True)
-
-    class Meta:
-        model = Post
-        fields = ['id', 'author', 'title', 'content', 'created_at', 'updated_at', 'comments_count']
-
+from accounts.serializers import UserSerializer
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.ReadOnlyField(source='author.username')
-    post_title = serializers.ReadOnlyField(source='post.title')
+    author = UserSerializer(read_only=True)
 
     class Meta:
         model = Comment
-        fields = ['id', 'post', 'post_title', 'author', 'content', 'created_at', 'updated_at']
+        fields = ["id", "post", "author", "content", "created_at", "updated_at"]
+        read_only_fields = ["author", "created_at", "updated_at"]
+
+
+class PostSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ["id", "author", "title", "content", "created_at", "updated_at", "comments"]
+        read_only_fields = ["author", "created_at", "updated_at", "comments"]
