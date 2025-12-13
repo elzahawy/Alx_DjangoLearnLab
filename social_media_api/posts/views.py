@@ -12,40 +12,6 @@ class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = "page_size"
     max_page_size = 50
 
-class LikePostView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
-
-        like, created = Like.objects.get_or_create(user=request.user, post=post)
-        if not created:
-            return Response({"detail": "You already liked this post."}, status=400)
-
-        if post.author != request.user:
-            Notification.objects.create(
-                recipient=post.author,
-                actor=request.user,
-                verb="liked your post",
-                target=post
-            )
-
-        return Response({"detail": "Post liked successfully."})
-
-
-class UnlikePostView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
-        like = Like.objects.filter(user=request.user, post=post).first()
-
-        if not like:
-            return Response({"detail": "You have not liked this post."}, status=400)
-
-        like.delete()
-        return Response({"detail": "Post unliked successfully."})
-
 
 class FeedView(generics.ListAPIView):
     serializer_class = PostSerializer
@@ -56,6 +22,35 @@ class FeedView(generics.ListAPIView):
         following_users = user.following.all()
         return Post.objects.filter(author__in=following_users).order_by('-created_at')
 
+# Like / Unlike views
+class LikePostView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        if not created:
+            return Response({"detail": "You already liked this post."}, status=400)
+        if post.author != request.user:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=request.user,
+                verb="liked your post",
+                target=post
+            )
+        return Response({"detail": "Post liked successfully."})
+
+
+class UnlikePostView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        like = Like.objects.filter(user=request.user, post=post).first()
+        if not like:
+            return Response({"detail": "You have not liked this post."}, status=400)
+        like.delete()
+        return Response({"detail": "Post unliked successfully."})
 
 
 
