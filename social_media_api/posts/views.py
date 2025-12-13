@@ -1,5 +1,6 @@
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, generics, permissions, filters
 from rest_framework.pagination import PageNumberPagination
+
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 
@@ -10,15 +11,25 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 50
 
 
+class FeedView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        following_users = user.following.all()
+        return Post.objects.filter(
+            author__in=following_users
+        ).order_by("-created_at")
+
+
 class IsAuthorOrReadOnly(permissions.BasePermission):
     """
     Custom permission to allow only authors to edit or delete their posts/comments
     """
     def has_object_permission(self, request, view, obj):
-        # Read-only requests are allowed for any user
         if request.method in permissions.SAFE_METHODS:
             return True
-        # Only author can edit/delete
         return obj.author == request.user
 
 
@@ -42,19 +53,3 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-
-from rest_framework import generics, permissions
-from rest_framework.response import Response
-
-
-class FeedView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request):
-        followed_users = request.user.following.all()
-        posts = Post.objects.filter(author__in=followed_users).order_by('-created_at')
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
-
-
