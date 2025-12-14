@@ -108,11 +108,19 @@ WSGI_APPLICATION = 'social_media_api.wsgi.application'
 
 
 DATABASES = {
+    'default': dj_database_url.config(
+        default=f"postgres://{os.environ.get('DB_USER')}:{os.environ.get('DB_PASSWORD')}@{os.environ.get('DB_HOST')}:{os.environ.get('DB_PORT')}/{os.environ.get('DB_NAME')}"
+    )
+}
+
+
+
+'''DATABASES = {
     "default": dj_database_url.config(
         default="sqlite:///db.sqlite3",
         conn_max_age=600
     )
-}
+}'''
 
 
 '''DATABASES = {
